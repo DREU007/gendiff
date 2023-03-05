@@ -20,18 +20,19 @@ def parse_cli():
     return args.first_file, args.second_file, args.format
 
 
-def generate_diff(file_path1, file_path2):
-    decoder = {True: 'true',
-               False: 'false',
-               None: 'null'}
+DECODER = {True: 'true',
+           False: 'false',
+           None: 'null'}
 
+
+def generate_diff(file_path1, file_path2):
     with open(file_path1, 'r') as file1:
         dict1 = json.load(file1)
-        data1 = {key: decoder.get(val, val) for key, val in dict1.items()}
+        data1 = {key: DECODER.get(val, val) for key, val in dict1.items()}
 
     with open(file_path2, 'r') as file2:
         dict2 = json.load(file2)
-        data2 = {key: decoder.get(val, val) for key, val in dict2.items()}
+        data2 = {key: DECODER.get(val, val) for key, val in dict2.items()}
 
     all_keys = sorted(set(data1.keys()) | set(data2.keys()))
 

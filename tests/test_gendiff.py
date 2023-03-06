@@ -1,16 +1,12 @@
 from gendiff.scripts.gendiff import generate_diff
 
 
-filepath1 = 'file1.json'
-filepath2 = 'file2.json'
+filepath1 = 'tests/fixtures/file1.json'
+filepath2 = 'tests/fixtures/file2.json'
+
+flat_result_path = "tests/fixtures/flat_json_result.txt"
 
 
 def test_basic_json():
-    assert generate_diff(filepath1, filepath2) == """{
-- follow: false
-  host: hexlet.io
-- proxy: 123.234.53.22
-- timeout: 50
-+ timeout: 20
-+ verbose: true
-}"""
+    with open(flat_result_path, 'r') as flat_result:
+        assert generate_diff(filepath1, filepath2) == flat_result.read()

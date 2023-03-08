@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import yaml
 
 
 def parse_cli():
+    """Parse command line args and/ or returns tuple filepaths 1, 2 & format.
+
+    :returns: (filepath1, filepath2, format). Tuple of filepath to first_file,
+    second_file and format if any, else default."""
+
     parser = argparse.ArgumentParser(
         prog='gendiff',
         description='Compares two configuration files and shows a difference.'
@@ -20,19 +26,21 @@ def parse_cli():
     return args.first_file, args.second_file, args.format
 
 
-DECODER = {True: 'true',
-           False: 'false',
-           None: 'null'}
+JSON_DECODER = {True: 'true',
+                False: 'false',
+                None: 'null'}
+
+
+def get_json_dict(file_path):
+    with open(file_path, 'r') as file:
+        _dict = json.load(file)
+        data = {key: JSON_DECODER.get(val, val) for key, val in _dict.items()}
+        return data
 
 
 def generate_diff(file_path1, file_path2):
-    with open(file_path1, 'r') as file1:
-        dict1 = json.load(file1)
-        data1 = {key: DECODER.get(val, val) for key, val in dict1.items()}
-
-    with open(file_path2, 'r') as file2:
-        dict2 = json.load(file2)
-        data2 = {key: DECODER.get(val, val) for key, val in dict2.items()}
+    data1 = get_json_dict(file_path1)
+    data2 = get_json_dict(file_path2)
 
     all_keys = sorted(set(data1.keys()) | set(data2.keys()))
 

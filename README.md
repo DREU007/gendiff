@@ -10,5 +10,9 @@
 
 ### Examples
 
-Compares 2 .json files:
+Use of help argument & Comparison of 2 .json files:
 [![asciicast](https://asciinema.org/a/fAnxnQu0GNGMY7b1dalsxqGcr.svg)](https://asciinema.org/a/fAnxnQu0GNGMY7b1dalsxqGcr)
+
+
+Comparison of 2 .yml files:
+[![asciicast](https://asciinema.org/a/565610.svg)](https://asciinema.org/a/565610)

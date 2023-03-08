@@ -8,6 +8,8 @@ JSON_DECODER = {True: 'true',
                 False: 'false',
                 None: 'null'}
 
+YAML = {'yml', 'yaml'}
+
 
 def get_json_dict(file_path):
     with open(file_path, 'r') as file:
@@ -21,24 +23,24 @@ def get_yaml_dict(file_path):
         _dict = yaml.safe_load(file)
         # TODO: Fix JSON_DECODER in YAML func
         data = {key: JSON_DECODER.get(val, val) for key, val in _dict.items()}
-        print(_dict)
         return data
 
 
-def generate_diff(filepath1: str, filepath2: str):
-    extension_a = filepath1.rsplit('.', 1)[-1]
-    extension_b = filepath2.rsplit('.', 1)[-1]
-
-    # Check type of file
-    if extension_a == extension_b == 'json':
-        data1 = get_json_dict(filepath1)
-        data2 = get_json_dict(filepath2)
-    elif extension_a == extension_b == 'yml':
-        data1 = get_yaml_dict(filepath1)
-        data2 = get_yaml_dict(filepath2)
+def get_data(file_path):
+    extension = file_path.rsplit('.', 1)[-1]
+    is_yaml = bool(extension in YAML)
+    is_json = bool(extension == 'json')
+    if is_yaml:
+        return get_yaml_dict(file_path)
+    elif is_json:
+        return get_json_dict(file_path)
     else:
-        raise TypeError("Error Different FileTypes")
+        raise NotImplementedError('ERROR: Filetype is not supported yet!')
 
+
+def generate_diff(filepath1: str, filepath2: str):
+    data1 = get_data(filepath1)
+    data2 = get_data(filepath2)
     all_keys = sorted(set(data1.keys()) | set(data2.keys()))
 
     result = '{\n'

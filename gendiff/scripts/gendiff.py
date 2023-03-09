@@ -17,7 +17,7 @@ def parse_cli():
     parser.add_argument('first_file')
     parser.add_argument('second_file')
 
-    parser.add_argument('-f', '--format',
+    parser.add_argument('-f', '--format', default='stylish',
                         help='set format of output')
 
     args = parser.parse_args()
@@ -27,7 +27,7 @@ def parse_cli():
 
 def main():
     first, second, format_data = parse_cli()
-    if format_data is None:  # TODO: update None to type of format_data
+    if format_data is 'stylish':
         print(generate_diff(first, second))
 
 

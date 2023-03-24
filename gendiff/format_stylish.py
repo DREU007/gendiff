@@ -14,7 +14,7 @@ def get_item(data):
 
 
 def get_key(_obj):
-    return _obj.get("key")
+    return _obj["key"]
 
 
 # TODO: missing value if "" - empty string
@@ -22,20 +22,16 @@ def get_key(_obj):
 def get_values(_obj):
     if not (item := _obj.get("value")):
         return None
-    if value := item.get("both"):
-        return [value]
-    elif one := item.get("one"):
-
-        return [one]
+    if "both" in item:
+        return [item["both"]]
+    elif "one" in item:
+        return [item["one"]]
     else:
-        first = item.get("first")
-        second = item.get("second")
-        return [first, second] if first and second else (
-            [first] if first else [second])
+        return [item["first"], item["second"]]
 
 
-def get_meta(_object):
-    return _object.get("meta")
+def get_meta(_obj):
+    return _obj["meta"]
 
 
 def get_children(_object):
@@ -45,16 +41,11 @@ def get_children(_object):
     return children
 
 
-# def is_simple(data):
-#     if isinstance(data, list):
-#         return False
-#     return True
+TRANSLATOR = {True: "true", False: "false", None: "null"}
+SPACE = ' '
 
 
-REPLACER = ' '
-
-
-def make_output(data):
+def stringify(data):
     lines = list()
 
     indent = None
@@ -70,44 +61,36 @@ def make_output(data):
         first = meta.get("first")
         second = meta.get("second")
 
-        symbols = [first, second] if first and second else (
-            [x] if (x := meta.get("condition")) else (
-                [first] if first else [second]
-            )
-        )
+        symbols = (first, second) if first else meta.get("condition")
 
         if values:
             for value, symbol in zip(values, symbols):
-                line = f'{indent * REPLACER + symbol + " "}{key}: '
+                line = f'{indent * SPACE + symbol + " "}{key}: '
 
+                # TODO: Is it possible to remove meta["indent"] and make full
+                # recursion??
                 def deep_line(current_value, current_indent):
                     if isinstance(current_value, dict):
-                        deep_indent = current_indent + 2
-                        _lines = [f'{(current_indent + 4) * REPLACER}{k}: {deep_line(v, deep_indent)}'  # TODO: fix (indent + 4)
-                                  for k, v in current_value.items()]
+                        deep_indent = current_indent + 2  # TODO: fix indent +2
+
+                        # TODO: fix (indent + 4)
+                        deep_lines = [f'{(current_indent + 4) * SPACE}{_key}'
+                                      f': {deep_line(val, deep_indent)}'
+                                      for _key, val in current_value.items()]
+
                         result = itertools.chain(
-                            "{", _lines, [(current_indent + 2) * REPLACER + "}"]  # TODO: fix (indent + 2)
+                            "{", deep_lines,
+                            [(current_indent + 2) * SPACE + "}"]  # TODO: fix (indent + 2)
                         )
                         return "\n".join(result)
-                    else:
-                        return current_value
+                    return str(TRANSLATOR.get(current_value, current_value))  # TODO: Apply traslator
 
                 line += deep_line(value, indent)
                 lines.append(line)
         elif children:
-            line = f'{REPLACER * indent + symbols[0] + " "}{key}: '
-            line += make_output(children)
+            line = f'{SPACE * indent + symbols[0] + " "}{key}: '
+            line += stringify(children)
             lines.append(line)
 
-    output = itertools.chain("{", lines, [indent * REPLACER + "}"])
+    output = itertools.chain("{", lines, [indent * SPACE + "}"])
     return "\n".join(output)
-
-#     if not is_simple(data):
-#         output += f'{replacer * (indent - indent_step)}{"}"}\n'
-#     return output
-#
-# def stringify(data, replacer=' ', indent=1):
-#     if isinstance(data, dict):
-#         new_object = make_object(data, replacer=replacer, indent=indent)
-#         return generate_output(new_object).strip()
-#     return str(data)

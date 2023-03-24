@@ -1,40 +1,17 @@
 import json
 import yaml
 
-from gendiff.format_stylish import make_output
-
-
-JSON_DECODER = {True: 'true',
-                False: 'false',
-                None: 'null'}
-
-# YAML = {'yml', 'yaml'}
-
-
-# def get_decoded(data: dict):
-#     if isinstance(data, dict):
-#         decoded_data = {key: JSON_DECODER.get(val, get_decoded(val)) for key, val in data.items()}
-#         print(decoded_data)
-#         return decoded_data
-#     else:
-#         return data
+from gendiff.format_stylish import stringify
 
 
 def get_json_dict(file_path):
     with open(file_path, 'r') as file:
-        _dict = json.load(file)
-        data = _dict
-        # data = get_decoded(_dict)
-        return data
+        return json.load(file)
 
 
 def get_yaml_dict(file_path):
     with open(file_path, 'r') as file:
-        _dict = yaml.safe_load(file)
-        # TODO: Fix JSON_DECODER in YAML func
-        # data = {key: JSON_DECODER.get(val, val) for key, val in _dict.items()}
-        data = _dict
-        return data
+        return yaml.safe_load(file)
 
 
 def get_data(file_path):
@@ -51,7 +28,7 @@ def make_diff(data1, data2):
 
     def inner(current_data1, current_data2, current_indent):
         deep_indent = current_indent + indent
-        
+
         all_keys = sorted(
             set(current_data1.keys()) | set(current_data2.keys())
         )
@@ -62,11 +39,13 @@ def make_diff(data1, data2):
             item["key"] = str(key)
             item["meta"] = {"indent": current_indent}
 
-            first = current_data1.get(key)
-            second = current_data2.get(key)
+            is_key1 = True if key in current_data1 else False
+            is_key2 = True if key in current_data2 else False
 
-            if first and second:
+            if is_key1 and is_key2:
                 item["meta"].update({"condition": ' '})
+                first = current_data1[key]
+                second = current_data2[key]
 
                 if first == second:
                     item["value"] = {"both": first}
@@ -78,25 +57,23 @@ def make_diff(data1, data2):
                         item["meta"].update({'first': '-', 'second': '+'})
 
             else:
-                condition = '-' if first else '+'
-                only_one = {'-': first, '+': second}
-                val = only_one[condition]
-                item["value"] = {
-                    "one": val if isinstance(val, dict) else str(val)
-                }
-                item["meta"].update({"condition": condition})
+                condition = ('-', current_data1[key]) if is_key1 else (
+                    '+', current_data2[key]
+                )
+
+                item["value"] = {"one": condition[1]}
+                item["meta"].update({"condition": condition[0]})
 
             differences.append(item)
-
         return differences
-    return inner(data1, data2, 2)
+    return inner(data1, data2, 2)  # TODO: Fix indent
 
 
 def generate_diff(filepath1: str, filepath2: str):
     data1 = get_data(filepath1)
     data2 = get_data(filepath2)
     diff = make_diff(data1, data2)
-    output = make_output(diff)
+    output = stringify(diff)
     return output
 
 

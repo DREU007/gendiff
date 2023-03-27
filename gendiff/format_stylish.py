@@ -69,28 +69,31 @@ def stringify(data):
 
                 # TODO: Is it possible to remove meta["indent"] and make full
                 # recursion??
-                def deep_line(current_value, current_indent):
+                def deep_line(current_value, depth):
                     if isinstance(current_value, dict):
-                        deep_indent = current_indent + 2  # TODO: fix indent +2
+                        deep_depth = depth + 2  # TODO: fix indent +2
 
                         # TODO: fix (indent + 4)
-                        deep_lines = [f'{(current_indent + 4) * SPACE}{_key}'
-                                      f': {deep_line(val, deep_indent)}'
+                        deep_lines = [f'{(depth + 4) * SPACE}{_key}'
+                                      f': {deep_line(val, deep_depth)}'
                                       for _key, val in current_value.items()]
 
                         result = itertools.chain(
                             "{", deep_lines,
-                            [(current_indent + 2) * SPACE + "}"]  # TODO: fix (indent + 2)
+                            [depth * SPACE + "}"]  # TODO: fix (indent + 2)
                         )
                         return "\n".join(result)
-                    return str(TRANSLATOR.get(current_value, current_value))  # TODO: Apply traslator
+                    return str(TRANSLATOR.get(current_value, current_value))
 
-                line += deep_line(value, indent)
+                line += deep_line(value, indent + 2)
+                # line.rstrip()  # STRIP
                 lines.append(line)
+
         elif children:
             line = f'{SPACE * indent + symbols[0] + " "}{key}: '
             line += stringify(children)
             lines.append(line)
 
-    output = itertools.chain("{", lines, [indent * SPACE + "}"])
+    lines = list(map(lambda _line: _line.rstrip(), lines))
+    output = itertools.chain("{", lines, [(indent - 2) * SPACE + "}"])
     return "\n".join(output)

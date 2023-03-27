@@ -1,7 +1,3 @@
-# TODO: Make formatter that return detailed difference
-# '-' is removed
-# '+' is added
-# ' ' is kept the same
 import itertools
 
 
@@ -17,8 +13,6 @@ def get_key(_obj):
     return _obj["key"]
 
 
-# TODO: missing value if "" - empty string
-# TODO: Refactor value if dict()
 def get_values(_obj):
     if not (item := _obj.get("value")):
         return None
@@ -42,58 +36,58 @@ def get_children(_object):
 
 
 TRANSLATOR = {True: "true", False: "false", None: "null"}
-SPACE = ' '
 
 
-def stringify(data):
-    lines = list()
+def stringify(data, replacer=' ', indent=2):
+    def inner(data, depth):
+        lines = list()
 
-    indent = None
-    for item in get_item(data):
-        key = get_key(item)
+        deep_depth = depth + indent
+        deep_indent = deep_depth * replacer
+        current_indent = depth * replacer
 
-        meta = get_meta(item)
-        indent = meta["indent"]
+        for item in get_item(data):
+            key = get_key(item)
+            meta = get_meta(item)
 
-        values = get_values(item)
-        children = get_children(item)
+            values = get_values(item)
+            children = get_children(item)
 
-        first = meta.get("first")
-        second = meta.get("second")
+            first = meta.get("first")
+            second = meta.get("second")
 
-        symbols = (first, second) if first else meta.get("condition")
+            symbols = (first, second) if first else meta.get("condition")
+            if values:
+                for value, symbol in zip(values, symbols):
+                    line = f'{deep_indent + symbol + " "}{key}: '
 
-        if values:
-            for value, symbol in zip(values, symbols):
-                line = f'{indent * SPACE + symbol + " "}{key}: '
+                    def deep_line(current_value, deep_depth):
+                        if isinstance(current_value, dict):
+                            deeper_depth = deep_depth + 2 * indent
+                            deeper_indent = deeper_depth * replacer
+                            current_deep_indent = deep_depth * replacer
 
-                # TODO: Is it possible to remove meta["indent"] and make full
-                # recursion??
-                def deep_line(current_value, depth):
-                    if isinstance(current_value, dict):
-                        deep_depth = depth + 2  # TODO: fix indent +2
+                            deep_lines = [
+                                f'{deeper_indent}{_key}: '
+                                f'{deep_line(val, deeper_depth)}'
+                                for _key, val in current_value.items()
+                            ]
 
-                        # TODO: fix (indent + 4)
-                        deep_lines = [f'{(depth + 4) * SPACE}{_key}'
-                                      f': {deep_line(val, deep_depth)}'
-                                      for _key, val in current_value.items()]
+                            result = itertools.chain(
+                                "{", deep_lines, [current_deep_indent + "}"]
+                            )
+                            return "\n".join(result)
+                        return str(TRANSLATOR.get(current_value, current_value))
 
-                        result = itertools.chain(
-                            "{", deep_lines,
-                            [depth * SPACE + "}"]  # TODO: fix (indent + 2)
-                        )
-                        return "\n".join(result)
-                    return str(TRANSLATOR.get(current_value, current_value))
+                    line += deep_line(value, deep_depth + indent)
+                    lines.append(line)
 
-                line += deep_line(value, indent + 2)
-                # line.rstrip()  # STRIP
+            elif children:
+                line = f'{deep_indent + symbols[0] + " "}{key}: '
+                line += inner(children, deep_depth + indent)
                 lines.append(line)
 
-        elif children:
-            line = f'{SPACE * indent + symbols[0] + " "}{key}: '
-            line += stringify(children)
-            lines.append(line)
-
-    lines = list(map(lambda _line: _line.rstrip(), lines))
-    output = itertools.chain("{", lines, [(indent - 2) * SPACE + "}"])
-    return "\n".join(output)
+        lines = list(map(lambda _line: _line.rstrip(), lines))
+        output = itertools.chain("{", lines, [current_indent + "}"])
+        return "\n".join(output)
+    return inner(data, 0)

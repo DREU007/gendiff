@@ -26,8 +26,9 @@ def get_data(file_path):
 def make_diff(data1, data2):
     indent = 2
 
-    def inner(current_data1, current_data2, current_indent):
-        deep_indent = current_indent + indent
+    def inner(current_data1, current_data2, depth):
+        current_indent = depth + indent
+        deep_depth = current_indent + indent
 
         all_keys = sorted(
             set(current_data1.keys()) | set(current_data2.keys())
@@ -37,21 +38,22 @@ def make_diff(data1, data2):
         for key in all_keys:
             item = dict()
             item["key"] = str(key)
-            item["meta"] = {"indent": current_indent}
+            item["meta"] = {"indent": current_indent}  # current_indent
 
             is_key1 = True if key in current_data1 else False
             is_key2 = True if key in current_data2 else False
 
             if is_key1 and is_key2:
-                item["meta"].update({"condition": ' '})
                 first = current_data1[key]
                 second = current_data2[key]
 
                 if first == second:
+                    item["meta"].update({"condition": ' '})
                     item["value"] = {"both": first}
                 else:
                     if isinstance(first, dict) and isinstance(second, dict):
-                        item["children"] = inner(first, second, deep_indent)
+                        item["meta"].update({"condition": ' '})
+                        item["children"] = inner(first, second, deep_depth)
                     else:
                         item["value"] = {"first": first, "second": second}
                         item["meta"].update({'first': '-', 'second': '+'})
@@ -66,7 +68,7 @@ def make_diff(data1, data2):
 
             differences.append(item)
         return differences
-    return inner(data1, data2, 2)  # TODO: Fix indent
+    return inner(data1, data2, 0)  # TODO: Fix indent
 
 
 def generate_diff(filepath1: str, filepath2: str):

@@ -74,9 +74,9 @@ def make_diff(data1, data2):
 def generate_diff(filepath1: str, filepath2: str):
     data1 = get_data(filepath1)
     data2 = get_data(filepath2)
-    diff = make_diff(data1, data2)
-    output = stringify(diff)
-    return output
+    # diff = make_diff(data1, data2)
+    # output = stringify(diff)
+    return make_diff(data1, data2)
 
 
 # file_path = '../tests/fixtures/file_tree1.json'

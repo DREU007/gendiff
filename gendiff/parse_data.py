@@ -2,60 +2,89 @@ import json
 import yaml
 
 
-JSON_DECODER = {True: 'true',
-                False: 'false',
-                None: 'null'}
-
-YAML = {'yml', 'yaml'}
-
-
-def get_json_dict(file_path):
-    with open(file_path, 'r') as file:
-        _dict = json.load(file)
-        data = {key: JSON_DECODER.get(val, val) for key, val in _dict.items()}
-        return data
-
-
-def get_yaml_dict(file_path):
-    with open(file_path, 'r') as file:
-        _dict = yaml.safe_load(file)
-        # TODO: Fix JSON_DECODER in YAML func
-        data = {key: JSON_DECODER.get(val, val) for key, val in _dict.items()}
-        return data
-
-
 def get_data(file_path):
-    extension = file_path.rsplit('.', 1)[-1]
-    is_yaml = bool(extension in YAML)
-    is_json = bool(extension == 'json')
-    if is_yaml:
-        return get_yaml_dict(file_path)
-    elif is_json:
-        return get_json_dict(file_path)
-    else:
-        raise NotImplementedError('ERROR: Filetype is not supported yet!')
-
-
-def generate_diff(filepath1: str, filepath2: str):
-    data1 = get_data(filepath1)
-    data2 = get_data(filepath2)
-    all_keys = sorted(set(data1.keys()) | set(data2.keys()))
-
-    result = '{\n'
-    for key in all_keys:
-        first = data1.get(key)
-        second = data2.get(key)
-
-        first_msg = f'  - {key}: {first}\n'
-        second_msg = f'  + {key}: {second}\n'
-
-        if first and second:
-            if first == second:
-                result += f'{" " * 4}{key}: {first}\n'
-            else:
-                result += first_msg + second_msg
+    with open(file_path, 'r') as file:
+        if file_path.endswith(".yml") or file_path.endswith(".yaml"):
+            return yaml.safe_load(file)
+        elif file_path.endswith(".json"):
+            return json.load(file)
         else:
-            result += first_msg if first else second_msg
+            raise NotImplementedError('ERROR: Filetype is not supported yet!')
 
-    result += '}'
-    return result
+
+def make_diff(data1, data2):
+    def inner(current_data1, current_data2, ):
+        all_keys = sorted(
+            set(current_data1.keys()) | set(current_data2.keys())
+        )
+
+        differences = list()
+        for key in all_keys:
+            item = dict()
+            item["key"] = str(key)
+
+            is_key1 = True if key in current_data1 else False
+            is_key2 = True if key in current_data2 else False
+
+            if is_key1 and is_key2:
+                first = current_data1[key]
+                second = current_data2[key]
+
+                if first == second:
+                    item["meta"] = {"condition": ' '}
+                    item["value"] = {"both": first}
+                else:
+                    if isinstance(first, dict) and isinstance(second, dict):
+                        item["meta"] = {"condition": ' '}
+                        item["children"] = inner(first, second)
+                    else:
+                        item["value"] = {"first": first, "second": second}
+                        item["meta"] = {'first': '-', 'second': '+'}
+
+            else:
+                condition = ('-', current_data1[key]) if is_key1 else (
+                    '+', current_data2[key]
+                )
+
+                item["value"] = {"one": condition[1]}
+                item["meta"] = {"condition": condition[0]}
+
+            differences.append(item)
+        return differences
+    return inner(data1, data2)
+
+
+def get_item(data):
+    if isinstance(data, list):
+        for item in data:
+            yield from get_item(item)
+    else:
+        yield data
+
+
+def get_key(_obj):
+    return _obj["key"]
+
+
+def get_values(_obj):
+    if not (item := _obj.get("value")):
+        return None
+    if "both" in item:
+        return [item["both"]]
+    elif "one" in item:
+        return [item["one"]]
+    else:
+        return [item["first"], item["second"]]
+
+
+def get_meta(_obj):
+    return _obj["meta"]
+
+
+def get_children(_object):
+    children = _object.get("children")
+    if isinstance(children, dict):
+        return [children]  # Return list if single dict
+    return children
+
+

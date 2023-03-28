@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
-from gendiff.parse_data import generate_diff
+from gendiff.parse_data import make_diff, get_data
+from gendiff.format_stylish import stringify
 
 
 def parse_cli():
@@ -17,18 +18,25 @@ def parse_cli():
     parser.add_argument('first_file')
     parser.add_argument('second_file')
 
-    parser.add_argument('-f', '--format',
+    parser.add_argument('-f', '--format', default='stylish',
                         help='set format of output')
 
     args = parser.parse_args()
-    # print(args.accumulate(args.first_file, args.second_file))
     return args.first_file, args.second_file, args.format
+
+
+def generate_diff(filepath1: str, filepath2: str):
+    data1 = get_data(filepath1)
+    data2 = get_data(filepath2)
+    diff = make_diff(data1, data2)
+    return stringify(diff)
 
 
 def main():
     first, second, format_data = parse_cli()
-    if format_data is None:  # TODO: update None to type of format_data
-        print(generate_diff(first, second))
+    diff = generate_diff(first, second)
+    if format_data == 'stylish':
+        print(diff)
 
 
 if __name__ == "__main__":

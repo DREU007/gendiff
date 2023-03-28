@@ -39,3 +39,12 @@ tree_yaml_result_path = "tests/fixtures/tree_yaml_result.txt"
 def test_tree_yaml():
     with open(tree_yaml_result_path, 'r') as result:
         assert generate_diff(yaml1_tree_path, yaml2_tree_path) == result.read()
+
+
+plain_json_result = "tests/fixtures/plain_json_result.txt"
+
+
+def plain_json():
+    with open(plain_json_result, 'r') as result:
+        assert generate_diff(json1_tree_path, json2_tree_path, "plain"
+                             ) == result.read()

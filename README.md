@@ -16,3 +16,7 @@ Use of help argument & Comparison of 2 .json files:
 
 Comparison of 2 .yml files:
 [![asciicast](https://asciinema.org/a/565610.svg)](https://asciinema.org/a/565610)
+
+
+Comparison of 2 complex .yml files:
+[![asciicast](https://asciinema.org/a/kjPBDAVVb2OBQeDZb1UKdBdQs.svg)](https://asciinema.org/a/kjPBDAVVb2OBQeDZb1UKdBdQs)

@@ -1,4 +1,5 @@
 from gendiff.scripts.gendiff import generate_diff
+import json
 
 
 json1_path = 'tests/fixtures/file1.json'
@@ -48,3 +49,12 @@ def test_plain_json():
     with open(plain_json_result, 'r') as result:
         assert generate_diff(json1_tree_path, json2_tree_path, "plain"
                              ) == result.read()
+
+
+json_format_result_path = 'tests/fixtures/json_format_result.json'
+
+
+def test_json_format():
+    with open(json_format_result_path, 'r') as result:
+        assert generate_diff(json1_tree_path, json2_tree_path, "json"
+                             ) == json.load(result)

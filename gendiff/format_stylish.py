@@ -53,7 +53,7 @@ def stringify(diff_tree, replacer=' ', indent=2):
                     line += deep_line(value, deep_depth + indent)
                     lines.append(line)
 
-            elif children:
+            else:
                 line = f'{deep_indent + symbols[0] + " "}{key}: '
                 line += inner(children, deep_depth + indent)
                 lines.append(line)

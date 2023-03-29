@@ -86,5 +86,3 @@ def get_children(_object):
     if isinstance(children, dict):
         return [children]  # Return list if single dict
     return children
-
-

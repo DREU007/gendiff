@@ -1,0 +1,77 @@
+{
+  "common": {
+    "meta": {"condition": " "},
+    "children": {
+      "follow": {
+        "value": {"one": false},
+        "meta": {"condition": "+"}
+      },
+      "setting1": {"meta": {"condition": " "},
+        "value": {"both": "Value 1"}
+      },
+      "setting2": {
+        "value": {"one": 200},
+        "meta": {"condition": "-"}
+      },
+      "setting3": {
+        "value": {"first": true, "second": null},
+        "meta": {"first": "-", "second": "+"}
+      },
+      "setting4": {
+        "value": {"one": "blah blah"},
+        "meta": {"condition": "+"}
+      },
+      "setting5": {
+        "value": {"one": {"key5": "value5"}},
+        "meta": {"condition": "+"}
+      },
+      "setting6": {
+        "meta": {"condition": " "},
+        "children": {
+          "doge": {
+            "meta": {"condition": " "},
+            "children": {
+              "wow": {
+                "value": {"first": "", "second": "so much"},
+                "meta": {"first": "-", "second": "+"}
+              }
+            }
+          },
+          "key": {
+            "meta": {"condition": " "},
+            "value": {"both": "value"}
+          },
+          "ops": {
+            "value": {"one": "vops"},
+            "meta": {"condition": "+"}
+          }
+        }
+      }
+    }
+  },
+  "group1": {
+    "meta": {"condition": " "},
+    "children": {
+      "baz": {
+        "value": {"first": "bas", "second": "bars"},
+        "meta": {"first": "-", "second": "+"}
+      },
+      "foo": {
+        "meta": {"condition": " "},
+        "value": {"both": "bar"}
+      },
+      "nest": {
+        "value": {"first": {"key": "value"}, "second": "str"},
+        "meta": {"first": "-", "second": "+"}
+      }
+    }
+  },
+  "group2": {
+    "value": {"one": {"abc": 12345, "deep": {"id": 45}}},
+    "meta": {"condition": "-"}
+  },
+  "group3": {
+    "value": {"one": {"deep": {"id": {"number": 45}}, "fee": 100500}},
+    "meta": {"condition": "+"}
+  }
+}

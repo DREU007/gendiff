@@ -5,9 +5,8 @@ from gendiff.format_stylish import TRANSLATOR
 
 
 def value_to_str(value):
-    return TRANSLATOR.get(value, value) if not isinstance(value, dict) else (
-        '[complex value]'
-    )
+    return TRANSLATOR.get(value, f"'{value}'") if not isinstance(
+        value, dict) else '[complex value]'
 
 
 # TODO: to remember key if go deeper
@@ -24,7 +23,7 @@ def make_plain(full_data):
             first = meta.get("first")
             second = meta.get("second")
 
-            symbols = (first, second) if first else meta.get("condition")  # TODO: Is it required?
+            symbols = (first, second) if first else meta.get("condition")
 
             if values:
                 line = f"Property '{current_key + key}'"

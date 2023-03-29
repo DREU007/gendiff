@@ -38,7 +38,7 @@ def generate_diff(filepath1: str, filepath2: str, format_data='stylish'):
 
 def main():
     first, second, format_data = parse_cli()
-    diff = generate_diff(first, second)
+    diff = generate_diff(first, second, format_data)
     print(diff)
 
 

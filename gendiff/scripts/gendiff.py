@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+# import json
 from gendiff.parse_data import make_diff, get_data
 from gendiff.format_stylish import stringify
 from gendiff.format_plain import make_plain
+from gendiff.format_json import make_json
 
 
 def parse_cli():
@@ -34,6 +36,11 @@ def generate_diff(filepath1: str, filepath2: str, format_data='stylish'):
         return stringify(diff)
     elif format_data == 'plain':
         return make_plain(diff)
+    elif format_data == 'json':
+        # with open('diff.json', 'w') as file:
+        #     diff = make_json(diff)
+        #     json.dump(diff, file)
+        return make_json(diff)
 
 
 def main():

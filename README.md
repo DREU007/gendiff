@@ -24,3 +24,7 @@ Comparison of 2 complex .yml files:
 
 Comparison in "plain" format (2 complex .json files):
 [![asciicast](https://asciinema.org/a/571593.svg)](https://asciinema.org/a/571593)
+
+
+Comparison in "json" format (2 complex .json files):
+[![asciicast](https://asciinema.org/a/571702.svg)](https://asciinema.org/a/571702)

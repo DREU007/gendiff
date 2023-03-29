@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.1.0"
+version = "1.0.0"
 description = "gendiff Compares two configuration files and shows a difference."
+classifiers = [
+    "Topic :: Utilities"
+]
 authors = ["Denis Bolshakov <dreu007@gmail.com>"]
+repository = "https://github.com/DREU007/python-project-50"
 readme = "README.md"
 packages = [{include = "gendiff"}]
 

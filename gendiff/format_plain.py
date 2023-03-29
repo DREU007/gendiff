@@ -5,11 +5,10 @@ from gendiff.format_stylish import TRANSLATOR
 
 
 def value_to_str(value):
-    return TRANSLATOR.get(value, f"'{value}'") if not isinstance(
-        value, dict) else '[complex value]'
+    return '[complex value]' if isinstance(value, dict) else (
+        TRANSLATOR.get(value, f"'{value}'")
+    )
 
-
-# TODO: to remember key if go deeper
 
 def make_plain(full_data):
     def inner(data, current_key):
@@ -37,16 +36,10 @@ def make_plain(full_data):
                 else:
                     line += f' was added with value: {val1}' if (
                             sym == "+") else ' was removed'
-            elif children:
+            else:
                 deep_key = current_key + f"{key}."
                 line = inner(children, deep_key)
-            else:
-                continue
             lines.append(line)
         return "\n".join(lines)
 
     return inner(full_data, "")
-
-
-
-

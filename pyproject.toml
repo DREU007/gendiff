@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "1.0.0"
+version = "1.0.1"
 description = "gendiff Compares two configuration files and shows a difference."
 classifiers = [
     "Topic :: Utilities"

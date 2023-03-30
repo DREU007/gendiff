@@ -5,8 +5,9 @@ from gendiff.formats.format_stylish import TRANSLATOR
 
 
 def value_to_str(value):
+    is_bool_or_none = bool(isinstance(value, bool) or value is None)
     return '[complex value]' if isinstance(value, dict) else (
-        TRANSLATOR.get(value, f"'{value}'")
+        TRANSLATOR.get(value) if is_bool_or_none else f"'{value}'"
     )
 
 

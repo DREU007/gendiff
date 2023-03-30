@@ -1,7 +1,7 @@
 from gendiff.parse_data import (
     get_item, get_key, get_values, get_meta, get_children
 )
-from gendiff.format_stylish import TRANSLATOR
+from gendiff.formats.format_stylish import TRANSLATOR
 
 
 def value_to_str(value):

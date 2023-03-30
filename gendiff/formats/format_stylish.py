@@ -8,6 +8,25 @@ from gendiff.parse_data import (
 TRANSLATOR = {True: "true", False: "false", None: "null"}
 
 
+def deep_line(_value, _deep_depth, indent, replacer):
+    if isinstance(_value, dict):
+        deeper_depth = _deep_depth + 2 * indent
+        deeper_indent = deeper_depth * replacer
+        current_deep_indent = _deep_depth * replacer
+
+        deep_lines = [
+            f'{deeper_indent}{_key}: '
+            f'{deep_line(val, deeper_depth, indent, replacer)}'
+            for _key, val in _value.items()
+        ]
+
+        result = itertools.chain(
+            "{", deep_lines, [current_deep_indent + "}"]
+        )
+        return "\n".join(result)
+    return str(TRANSLATOR.get(_value, _value))
+
+
 def stringify(diff_tree, replacer=' ', indent=2):
     def inner(data, depth):
         lines = list()
@@ -28,29 +47,12 @@ def stringify(diff_tree, replacer=' ', indent=2):
             second = meta.get("second")
 
             symbols = (first, second) if first else meta.get("condition")
+
             if values:
                 for value, symbol in zip(values, symbols):
                     line = f'{deep_indent + symbol + " "}{key}: '
-
-                    def deep_line(_value, _deep_depth):
-                        if isinstance(_value, dict):
-                            deeper_depth = _deep_depth + 2 * indent
-                            deeper_indent = deeper_depth * replacer
-                            current_deep_indent = _deep_depth * replacer
-
-                            deep_lines = [
-                                f'{deeper_indent}{_key}: '
-                                f'{deep_line(val, deeper_depth)}'
-                                for _key, val in _value.items()
-                            ]
-
-                            result = itertools.chain(
-                                "{", deep_lines, [current_deep_indent + "}"]
-                            )
-                            return "\n".join(result)
-                        return str(TRANSLATOR.get(_value, _value))
-
-                    line += deep_line(value, deep_depth + indent)
+                    deeper_indent = deep_depth + indent
+                    line += deep_line(value, deeper_indent, indent, replacer)
                     lines.append(line)
 
             else:

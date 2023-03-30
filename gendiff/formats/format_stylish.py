@@ -8,23 +8,28 @@ from gendiff.parse_data import (
 TRANSLATOR = {True: "true", False: "false", None: "null"}
 
 
-def deep_line(_value, _deep_depth, indent, replacer):
-    if isinstance(_value, dict):
-        deeper_depth = _deep_depth + 2 * indent
+def translate(value):
+    is_bool_or_none = bool(isinstance(value, bool) or value is None)
+    return TRANSLATOR.get(value) if is_bool_or_none else value
+
+
+def deep_line(value, deep_depth, indent, replacer):
+    if isinstance(value, dict):
+        deeper_depth = deep_depth + 2 * indent
         deeper_indent = deeper_depth * replacer
-        current_deep_indent = _deep_depth * replacer
+        current_deep_indent = deep_depth * replacer
 
         deep_lines = [
             f'{deeper_indent}{_key}: '
             f'{deep_line(val, deeper_depth, indent, replacer)}'
-            for _key, val in _value.items()
+            for _key, val in value.items()
         ]
 
         result = itertools.chain(
             "{", deep_lines, [current_deep_indent + "}"]
         )
         return "\n".join(result)
-    return str(TRANSLATOR.get(_value, _value))
+    return str(translate(value))
 
 
 def stringify(diff_tree, replacer=' ', indent=2):
@@ -60,7 +65,7 @@ def stringify(diff_tree, replacer=' ', indent=2):
                 line += inner(children, deep_depth + indent)
                 lines.append(line)
 
-        lines = list(map(lambda _line: _line.rstrip(), lines))
+        # lines = list(map(lambda _line: _line.rstrip(), lines))
         output = itertools.chain("{", lines, [current_indent + "}"])
         return "\n".join(output)
     return inner(diff_tree, 0)

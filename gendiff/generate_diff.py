@@ -1,7 +1,7 @@
 from gendiff.parse_data import make_diff, get_data
-from gendiff.formats.format_stylish import stringify
-from gendiff.formats.format_plain import make_plain
-from gendiff.formats.format_json import make_json
+from gendiff.formats import stringify
+from gendiff.formats import make_plain
+from gendiff.formats import make_json
 
 
 def generate_diff(filepath1: str, filepath2: str, format_data='stylish'):

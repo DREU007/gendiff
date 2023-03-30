@@ -16,4 +16,4 @@ def generate_diff(filepath1: str, filepath2: str, format_data='stylish'):
         # with open('diff.json', 'w') as file:
         #     diff = make_json(diff)
         #     json.dump(diff, file)
-        return make_json(diff)
+        return str(make_json(diff))

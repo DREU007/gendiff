@@ -1,3 +1,4 @@
+import json
 from gendiff.parse_data import make_diff, get_data
 from gendiff.formats import stringify
 from gendiff.formats import make_plain
@@ -13,7 +14,4 @@ def generate_diff(filepath1: str, filepath2: str, format_data='stylish'):
     elif format_data == 'plain':
         return make_plain(diff)
     elif format_data == 'json':
-        # with open('diff.json', 'w') as file:
-        #     diff = make_json(diff)
-        #     json.dump(diff, file)
-        return make_json(diff)
+        return json.dumps(make_json(diff))

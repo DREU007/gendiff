@@ -56,5 +56,5 @@ json_format_result_path = 'tests/fixtures/json_format_result.json'
 
 def test_json_format():
     with open(json_format_result_path, 'r') as result:
-        assert generate_diff(json1_tree_path, json2_tree_path, "json"
-                             ) == json.load(result)
+        data = generate_diff(json1_tree_path, json2_tree_path, "json")
+        assert json.loads(data) == json.load(result)

@@ -1,4 +1,4 @@
-from gendiff.parse_data import (
+from gendiff.diff_tree import (
     get_item, get_key, get_values, get_meta, get_children
 )
 from gendiff.formats.format_stylish import TRANSLATOR

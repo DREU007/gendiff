@@ -7,15 +7,16 @@ from gendiff import generate_diff
 @pytest.mark.parametrize(argnames="prepared_files",
                          argvalues=[
                              (
-                                'tree1.json',
-                                'tree2.json',
-                                "tree_json_result.txt",
-                                "stylish"
+                                 'tree1.json',
+                                 'tree2.json',
+                                 "tree_json_result.txt",
+                                 "stylish"
                              ),
                              (
-                                'tree1.yml',
-                                'tree2.yml', "tree_yaml_result.txt",
-                                "stylish"
+                                 'tree1.yml',
+                                 'tree2.yml',
+                                 "tree_yaml_result.txt",
+                                 "stylish"
                              ),
                              (
                                  'tree1.json',

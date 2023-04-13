@@ -1,16 +1,17 @@
+import os
 import json
 import yaml
 
 
-def get_data(file_path):
+def get_data(file_path: str):
     with open(file_path, 'r') as file:
-        return file.read(), file_path
+        return file.read(), os.path.splitext(file_path)[1]
 
 
-def parse_data(data, file_path):
-    if file_path.endswith(".yml") or file_path.endswith(".yaml"):
+def parse_data(data, extension):
+    if extension in (".yml", ".yaml"):
         return yaml.safe_load(data)
-    elif file_path.endswith(".json"):
+    elif extension == ".json":
         return json.loads(data)
     else:
         raise NotImplementedError('ERROR: Filetype is not supported yet!')

@@ -9,7 +9,7 @@ FORMAT = {
 }
 
 
-def get_format(diff, format_="stylish"):
+def formatting(diff, format_="stylish"):
     if not (func := FORMAT.get(format_)):
         raise ValueError("ERROR: Wrong format style!")
     return func(diff)

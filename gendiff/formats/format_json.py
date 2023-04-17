@@ -1,18 +1,18 @@
 import json
 from gendiff.diff_tree import (
-    get_item, get_key, get_values, get_children
+    get_key, get_value, get_children,
 )
 
 
 def prepare_data(data):
     output = dict()
-    for item in get_item(data):
+    for item in data:
         key = get_key(item)
 
-        values = get_values(item)
+        values = get_value(item)
         children = get_children(item)
 
-        if values:
+        if values != object:
             value = {_key: val for _key, val in item.items() if _key != "key"}
         else:
             value = {_key: val for _key, val in item.items() if _key != "key"
@@ -23,5 +23,5 @@ def prepare_data(data):
 
 
 def make_json(data):
-    result = prepare_data(data)
-    return json.dumps(result)
+    result = prepare_data(get_children(data))
+    return json.dumps(result, indent=4)

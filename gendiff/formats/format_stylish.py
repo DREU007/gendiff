@@ -1,7 +1,7 @@
 import itertools
 
 from gendiff.diff_tree import (
-    get_item, get_key, get_values, get_meta, get_children
+    get_key, get_value, get_children, get_type, TYPE_TO_SYM
 )
 
 
@@ -13,7 +13,7 @@ def translate(value):
     return TRANSLATOR.get(value) if is_bool_or_none else value
 
 
-def deep_line(value, deep_depth, indent, replacer):
+def deep_line(value, deep_depth, indent=2, replacer=" "):
     if isinstance(value, dict):
         deeper_depth = deep_depth + 2 * indent
         deeper_indent = deeper_depth * replacer
@@ -33,39 +33,44 @@ def deep_line(value, deep_depth, indent, replacer):
 
 
 def stringify(diff_tree, replacer=' ', indent=2):
-    def inner(data, depth):
-        lines = list()
+    return make_stylish(diff_tree, replacer=replacer, indent=indent)
 
+
+def make_stylish(diff_tree, replacer=" ", indent=2):
+    def inner(data, depth):
+        key = get_key(data)
+        type_ = get_type(data)
+
+        values = get_value(data)
+        children = get_children(data)
+
+        current_indent = depth * replacer
         deep_depth = depth + indent
         deep_indent = deep_depth * replacer
-        current_indent = depth * replacer
 
-        for item in get_item(data):
-            key = get_key(item)
+        symbols = TYPE_TO_SYM.get(type_)
 
-            values = get_values(item)
-            children = get_children(item)
-
-            meta = get_meta(item)
-
-            first = meta.get("first")
-            second = meta.get("second")
-
-            symbols = (first, second) if first else meta.get("condition")
-
-            if values:
-                for value, symbol in zip(values, symbols):
-                    line = f'{deep_indent + symbol + " "}{key}: '
-                    deeper_indent = deep_depth + indent
-                    line += deep_line(value, deeper_indent, indent, replacer)
-                    lines.append(line)
-
-            else:
-                line = f'{deep_indent + symbols[0] + " "}{key}: '
-                line += inner(children, deep_depth + indent)
+        lines = []
+        if values != object:
+            for value, sym in zip(values, symbols):
+                line = (f"{current_indent}{sym} {key}: "
+                        f"{deep_line(value, deep_depth)}")
                 lines.append(line)
 
-        # lines = list(map(lambda _line: _line.rstrip(), lines))
-        output = itertools.chain("{", lines, [current_indent + "}"])
-        return "\n".join(output)
-    return inner(diff_tree, 0)
+        else:
+            line = f"{current_indent}{symbols} {key}: "
+            ends = list(
+                map(lambda child: inner(child, deep_depth + indent), children)
+            )
+            ends = itertools.chain("{", ends, [deep_indent + "}"])
+
+            line += "\n".join(ends)
+            lines.append(line)
+        return "\n".join(lines)
+
+    root_lines = list(map(
+        lambda child: inner(child, depth=2), get_children(diff_tree)
+    ))
+    root_output = itertools.chain("{", root_lines, "}")
+    result = "\n".join(root_output)
+    return result

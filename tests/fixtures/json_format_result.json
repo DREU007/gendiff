@@ -1,77 +1,106 @@
 {
-  "common": {
-    "meta": {"condition": " "},
-    "children": {
-      "follow": {
-        "value": {"one": false},
-        "meta": {"condition": "+"}
-      },
-      "setting1": {"meta": {"condition": " "},
-        "value": {"both": "Value 1"}
-      },
-      "setting2": {
-        "value": {"one": 200},
-        "meta": {"condition": "-"}
-      },
-      "setting3": {
-        "value": {"first": true, "second": null},
-        "meta": {"first": "-", "second": "+"}
-      },
-      "setting4": {
-        "value": {"one": "blah blah"},
-        "meta": {"condition": "+"}
-      },
-      "setting5": {
-        "value": {"one": {"key5": "value5"}},
-        "meta": {"condition": "+"}
-      },
-      "setting6": {
-        "meta": {"condition": " "},
+    "common": {
+        "type": "parent",
         "children": {
-          "doge": {
-            "meta": {"condition": " "},
-            "children": {
-              "wow": {
-                "value": {"first": "", "second": "so much"},
-                "meta": {"first": "-", "second": "+"}
-              }
+            "follow": {
+                "type": "added",
+                "value": false
+            },
+            "setting1": {
+                "type": "same",
+                "value": "Value 1"
+            },
+            "setting2": {
+                "type": "deleted",
+                "value": 200
+            },
+            "setting3": {
+                "type": "changed",
+                "value": [
+                    true,
+                    null
+                ]
+            },
+            "setting4": {
+                "type": "added",
+                "value": "blah blah"
+            },
+            "setting5": {
+                "type": "added",
+                "value": {
+                    "key5": "value5"
+                }
+            },
+            "setting6": {
+                "type": "parent",
+                "children": {
+                    "doge": {
+                        "type": "parent",
+                        "children": {
+                            "wow": {
+                                "type": "changed",
+                                "value": [
+                                    "",
+                                    "so much"
+                                ]
+                            }
+                        }
+                    },
+                    "key": {
+                        "type": "same",
+                        "value": "value"
+                    },
+                    "ops": {
+                        "type": "added",
+                        "value": "vops"
+                    }
+                }
             }
-          },
-          "key": {
-            "meta": {"condition": " "},
-            "value": {"both": "value"}
-          },
-          "ops": {
-            "value": {"one": "vops"},
-            "meta": {"condition": "+"}
-          }
         }
-      }
+    },
+    "group1": {
+        "type": "parent",
+        "children": {
+            "baz": {
+                "type": "changed",
+                "value": [
+                    "bas",
+                    "bars"
+                ]
+            },
+            "foo": {
+                "type": "same",
+                "value": "bar"
+            },
+            "nest": {
+                "type": "changed",
+                "value": [
+                    {
+                        "key": "value"
+                    },
+                    "str"
+                ]
+            }
+        }
+    },
+    "group2": {
+        "type": "deleted",
+        "value": {
+            "abc": 12345,
+            "deep": {
+                "id": 45
+            }
+        }
+    },
+    "group3": {
+        "type": "added",
+        "value": {
+            "deep": {
+                "id": {
+                    "number": 45
+                }
+            },
+            "fee": 100500
+        }
     }
-  },
-  "group1": {
-    "meta": {"condition": " "},
-    "children": {
-      "baz": {
-        "value": {"first": "bas", "second": "bars"},
-        "meta": {"first": "-", "second": "+"}
-      },
-      "foo": {
-        "meta": {"condition": " "},
-        "value": {"both": "bar"}
-      },
-      "nest": {
-        "value": {"first": {"key": "value"}, "second": "str"},
-        "meta": {"first": "-", "second": "+"}
-      }
-    }
-  },
-  "group2": {
-    "value": {"one": {"abc": 12345, "deep": {"id": 45}}},
-    "meta": {"condition": "-"}
-  },
-  "group3": {
-    "value": {"one": {"deep": {"id": {"number": 45}}, "fee": 100500}},
-    "meta": {"condition": "+"}
-  }
 }

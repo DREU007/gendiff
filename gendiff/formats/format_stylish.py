@@ -32,15 +32,10 @@ def deep_line(value, deep_depth, indent=2, replacer=" "):
     return str(translate(value))
 
 
-def stringify(diff_tree, replacer=' ', indent=2):
-    return make_stylish(diff_tree, replacer=replacer, indent=indent)
-
-
 def make_stylish(diff_tree, replacer=" ", indent=2):
     def inner(data, depth):
         key = get_key(data)
         type_ = get_type(data)
-
         values = get_value(data)
         children = get_children(data)
 

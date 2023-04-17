@@ -1,9 +1,9 @@
-from gendiff.formats import stringify
+from gendiff.formats import make_stylish
 from gendiff.formats import make_plain
 from gendiff.formats import make_json
 
 FORMAT = {
-    "stylish": stringify,
+    "stylish": make_stylish,
     "plain": make_plain,
     "json": make_json
 }

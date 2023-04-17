@@ -1,5 +1,5 @@
 from gendiff.diff_tree import (
-    get_item, get_key, get_values, get_meta, get_children
+    get_key, get_value, get_children, get_type, TYPE_TO_SYM
 )
 from gendiff.formats.format_stylish import TRANSLATOR
 
@@ -17,36 +17,46 @@ def value_to_str(value):
     return output
 
 
-def make_plain(full_data):
-    def inner(data, current_key):
-        lines = []
-        for item in get_item(data):
-            key = get_key(item)
-            values = get_values(item)
-            children = get_children(item)
+def flatten(items):
+    result = []
+    for item in items:
+        if isinstance(item, list):
+            result.extend(flatten(item))
+        else:
+            result.append(item)
+    return result
 
-            meta = get_meta(item)
-            first = meta.get("first")
-            second = meta.get("second")
 
-            symbols = (first, second) if first else meta.get("condition")
+def make_plain(diff_tree):
+    def inner(item, current_key):
+        key = get_key(item)
+        type_ = get_type(item)
+        values = get_value(item)
+        children = get_children(item)
 
-            if values:
-                line = f"Property '{current_key + key}'"
-                val1 = value_to_str(values[0])
+        symbol = TYPE_TO_SYM.get(type_)
 
-                if len(values) > 1:
-                    val2 = value_to_str(values[1])
-                    line += f' was updated. From {val1} to {val2}'
-                elif (sym := symbols[0]) == ' ':
-                    continue
-                else:
-                    line += f' was added with value: {val1}' if (
-                            sym == "+") else ' was removed'
-            else:
-                deep_key = current_key + f"{key}."
-                line = inner(children, deep_key)
-            lines.append(line)
-        return "\n".join(lines)
+        if values != object:
+            line = f"Property '{current_key + key}'"
+            val1 = value_to_str(values[0])
 
-    return inner(full_data, "")
+            if len(values) > 1:
+                val2 = value_to_str(values[1])
+                line += f' was updated. From {val1} to {val2}'
+                return line
+
+            elif symbol == " ":
+                return
+
+            line += f' was added with value: {val1}' if (
+                    symbol == "+") else ' was removed'
+            return line
+
+        else:
+            deep_key = current_key + f"{key}."
+            return list(map(lambda child: inner(child, deep_key), children))
+
+    lines = list(map(lambda child: inner(child, ""), get_children(diff_tree)))
+    flat_lines = flatten(lines)
+    result = filter(None, flat_lines)
+    return "\n".join(result)

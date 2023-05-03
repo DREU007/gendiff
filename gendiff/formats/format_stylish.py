@@ -24,9 +24,9 @@ def deep_line(value, deep_depth, indent=2, replacer=" "):
         current_deep_indent = deep_depth * replacer
 
         deep_lines = [
-            f'{deeper_indent}{_key}: '
+            f'{deeper_indent}{key}: '
             f'{deep_line(val, deeper_depth, indent, replacer)}'
-            for _key, val in value.items()
+            for key, val in value.items()
         ]
 
         result = itertools.chain(

@@ -11,10 +11,10 @@ def prepare_data(data):
         children = get_children(item)
 
         if values != object:
-            value = {_key: val for _key, val in item.items() if _key != "key"}
+            value = {k: val for k, val in item.items() if k != "key"}
         else:
-            value = {_key: val for _key, val in item.items() if _key != "key"
-                     if _key != 'children'}
+            value = {k: val for k, val in item.items() if k != "key"
+                     if k != 'children'}
             value["children"] = prepare_data(children)
         output[key] = value
     return output

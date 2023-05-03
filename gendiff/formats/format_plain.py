@@ -28,11 +28,11 @@ def flatten(items):
 def make_plain(diff_tree):
     def inner(item, current_key):
         key = get_key(item)
-        type_ = get_type(item)
+        data_type = get_type(item)
         values = get_value(item)
         children = get_children(item)
 
-        symbol = TYPE_TO_SYM.get(type_)
+        symbol = TYPE_TO_SYM.get(data_type)
 
         if values != object:
             line = f"Property '{current_key + key}'"

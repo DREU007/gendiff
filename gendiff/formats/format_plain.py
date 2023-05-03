@@ -1,7 +1,5 @@
-from gendiff.diff_tree import (
-    get_key, get_value, get_children, get_type, TYPE_TO_SYM
-)
-from gendiff.formats.format_stylish import TRANSLATOR
+from gendiff.diff_tree import get_key, get_value, get_children, get_type
+from gendiff.formats.format_stylish import TRANSLATOR, TYPE_TO_SYM
 
 
 def value_to_str(value):

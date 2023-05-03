@@ -1,11 +1,15 @@
 import itertools
-
-from gendiff.diff_tree import (
-    get_key, get_value, get_children, get_type, TYPE_TO_SYM
-)
+from gendiff.diff_tree import get_key, get_value, get_children, get_type
 
 
 TRANSLATOR = {True: "true", False: "false", None: "null"}
+TYPE_TO_SYM = {
+    "added": "+",
+    "deleted": "-",
+    "same": " ",
+    "parent": " ",
+    "changed": ("-", "+")
+}
 
 
 def translate(value):

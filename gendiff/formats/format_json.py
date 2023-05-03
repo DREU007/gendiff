@@ -1,7 +1,5 @@
 import json
-from gendiff.diff_tree import (
-    get_key, get_value, get_children,
-)
+from gendiff.diff_tree import get_key, get_value, get_children
 
 
 def prepare_data(data):

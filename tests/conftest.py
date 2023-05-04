@@ -1,12 +1,17 @@
+import os
 import pytest
 
 
-# @pytest.mark.parametrize("before_fp", "after_fp", "result_fp", [
-@pytest.fixture(params=[
-    ('tree1.json', 'tree2.json', "tree_json_result.txt", "stylish"),
-    ('tree1.yml', 'tree2.yml', "tree_yaml_result.txt", "stylish"),
-    ('tree1.json', 'tree2.json', "plain_json_result.txt", "plain"),
-    ('tree1.json', 'tree2.json', "json_format_result.json", "json"),
-])
-def gendiff_fixtures(request):
-    return request.param
+@pytest.fixture(scope="function")
+def prepared_files(request):
+    file1_name, file2_name, result_file_name, format_name = request.param
+
+    fixtures_path = os.path.join(os.path.dirname(__file__), "fixtures")
+
+    with open(os.path.join(fixtures_path, result_file_name)) as result_file:
+        return (
+            os.path.join(fixtures_path, file1_name),
+            os.path.join(fixtures_path, file2_name),
+            result_file.read(),
+            format_name,
+        )

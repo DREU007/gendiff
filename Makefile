@@ -17,7 +17,7 @@ package-remove:
 	python3 -m pip uninstall hexlet-code
 
 lint:
-	poetry run flake8 gendiff
+	poetry run flake8 gendiff tests
 
 test:
 	poetry run pytest

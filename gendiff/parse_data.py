@@ -14,4 +14,4 @@ def parse_data(data, extension):
     elif extension == ".json":
         return json.loads(data)
     else:
-        raise NotImplementedError('ERROR: Filetype is not supported yet!')
+        raise ValueError('Filetype is not supported.')

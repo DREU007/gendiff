@@ -1,5 +1,5 @@
 from gendiff.diff_tree import get_key, get_value, get_children, get_type
-from gendiff.formats.format_stylish import TRANSLATOR, TYPE_TO_SYM
+from gendiff.formats.format_stylish import TRANSLATOR
 
 
 def value_to_str(value):
@@ -25,36 +25,38 @@ def flatten(items):
     return result
 
 
-def make_plain(diff_tree):
-    def inner(item, current_key):
-        key = get_key(item)
-        data_type = get_type(item)
-        values = get_value(item)
-        children = get_children(item)
+def make_plain(item, current_key=""):
+    data_type = get_type(item)
 
-        symbol = TYPE_TO_SYM.get(data_type)
+    if data_type == "root":
+        lines = list(map(
+            lambda child: make_plain(child), get_children(item)
+        ))
+        flat_lines = flatten(lines)
+        result = filter(None, flat_lines)
+        return "\n".join(result)
 
-        if values != object:
-            line = f"Property '{current_key + key}'"
-            val1 = value_to_str(values[0])
+    key = get_key(item)
+    values = get_value(item)
+    children = get_children(item)
 
-            if len(values) > 1:
-                val2 = value_to_str(values[1])
-                line += f' was updated. From {val1} to {val2}'
-                return line
+    if data_type == "parent":
+        deep_key = current_key + f"{key}."
+        return list(map(
+            lambda child: make_plain(child, deep_key), children
+        ))
 
-            elif symbol == " ":
-                return
+    elif data_type == "same":
+        return
 
-            line += f' was added with value: {val1}' if (
-                    symbol == "+") else ' was removed'
-            return line
+    line = f"Property '{current_key + key}'"
+    val1 = value_to_str(values[0])
 
-        else:
-            deep_key = current_key + f"{key}."
-            return list(map(lambda child: inner(child, deep_key), children))
+    if data_type == "changed":
+        val2 = value_to_str(values[1])
+        line += f' was updated. From {val1} to {val2}'
+        return line
 
-    lines = list(map(lambda child: inner(child, ""), get_children(diff_tree)))
-    flat_lines = flatten(lines)
-    result = filter(None, flat_lines)
-    return "\n".join(result)
+    line += f' was added with value: {val1}' if (
+            data_type == "added") else ' was removed'
+    return line

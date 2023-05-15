@@ -17,59 +17,69 @@ def translate(value):
     return TRANSLATOR.get(value) if is_bool_or_none else value
 
 
-def deep_line(value, deep_depth, indent=2, replacer=" "):
+def prepare_indent(depth, sym, replacer=" "):
+    return f"{depth * replacer}{sym} "
+
+
+INDENT = 2
+
+
+def deep_line(value, depth):
     if isinstance(value, dict):
-        deeper_depth = deep_depth + 2 * indent
-        deeper_indent = deeper_depth * replacer
-        current_deep_indent = deep_depth * replacer
+        deeper = depth + 2 * INDENT
 
         deep_lines = [
-            f'{deeper_indent}{key}: '
-            f'{deep_line(val, deeper_depth, indent, replacer)}'
+            prepare_indent(deeper, " ") + f'{key}: {deep_line(val, deeper)}'
             for key, val in value.items()
         ]
 
         result = itertools.chain(
-            "{", deep_lines, [current_deep_indent + "}"]
+            "{", deep_lines, [prepare_indent(depth, " ") + "}"]
         )
         return "\n".join(result)
     return str(translate(value))
 
 
-def make_stylish(diff_tree, replacer=" ", indent=2):
-    def inner(data, depth):
-        key = get_key(data)
-        type_ = get_type(data)
-        values = get_value(data)
-        children = get_children(data)
+def make_stylish(diff_tree, depth=0):
+    node_type = get_type(diff_tree)
+    children = get_children(diff_tree)
 
-        current_indent = depth * replacer
-        deep_depth = depth + indent
-        deep_indent = deep_depth * replacer
+    if node_type == "root":
+        root_lines = list(
+            map(lambda child: make_stylish(child, depth + INDENT), children)
+        )
 
-        symbols = TYPE_TO_SYM.get(type_)
+        root_output = itertools.chain("{", root_lines, "}")
+        result = "\n".join(root_output)
+        return result
 
-        lines = []
-        if values != object:
-            for value, sym in zip(values, symbols):
-                line = (f"{current_indent}{sym} {key}: "
-                        f"{deep_line(value, deep_depth)}")
-                lines.append(line)
+    key = get_key(diff_tree)
+    symbols = TYPE_TO_SYM.get(node_type)
 
-        else:
-            line = f"{current_indent}{symbols} {key}: "
-            ends = list(
-                map(lambda child: inner(child, deep_depth + indent), children)
+    lines = []
+
+    if node_type == "parent":
+        line = prepare_indent(depth, symbols) + f"{key}: "
+
+        ends = list(map(
+            lambda child: make_stylish(child, depth + 2 * INDENT), children
+        ))
+
+        ends = itertools.chain(
+            "{", ends, [prepare_indent(depth + INDENT, "}").rstrip()]
+        )
+
+        line += "\n".join(ends)
+        lines.append(line)
+
+    else:
+        values = get_value(diff_tree)
+
+        for value, sym in zip(values, symbols):
+            line = (
+                prepare_indent(depth, sym) + f"{key}: "
+                f"{deep_line(value, depth)}"
             )
-            ends = itertools.chain("{", ends, [deep_indent + "}"])
-
-            line += "\n".join(ends)
             lines.append(line)
-        return "\n".join(lines)
 
-    root_lines = list(map(
-        lambda child: inner(child, depth=2), get_children(diff_tree)
-    ))
-    root_output = itertools.chain("{", root_lines, "}")
-    result = "\n".join(root_output)
-    return result
+    return "\n".join(lines)

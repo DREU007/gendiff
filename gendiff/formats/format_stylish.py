@@ -66,7 +66,7 @@ def make_stylish(diff_tree, depth=0):
         ))
 
         ends = itertools.chain(
-            "{", ends, [prepare_indent(depth + INDENT, "}").rstrip()]
+            "{", ends, [prepare_indent(depth, " ") + "}"]
         )
 
         line += "\n".join(ends)
@@ -75,11 +75,8 @@ def make_stylish(diff_tree, depth=0):
     else:
         values = get_value(diff_tree)
 
-        for value, sym in zip(values, symbols):
-            line = (
-                prepare_indent(depth, sym) + f"{key}: "
-                f"{deep_line(value, depth)}"
-            )
+        for v, sym in zip(values, symbols):
+            line = prepare_indent(depth, sym) + f"{key}: {deep_line(v, depth)}"
             lines.append(line)
 
     return "\n".join(lines)

@@ -1,4 +1,3 @@
-import itertools
 from gendiff.diff_tree import get_key, get_value, get_children, get_type
 
 
@@ -55,7 +54,7 @@ def make_stylish(diff_tree, depth=0):
         ends = map(lambda node: make_stylish(node, depth + 1), children)
         ends = "\n".join(ends)
 
-        line += f"{{\n{ends}\n" + prepare_indent(depth, ' ') + f"}}"
+        line += f"{{\n{ends}\n" + prepare_indent(depth, ' ') + "}"
         return line
 
     # elif node_type == "same":
@@ -65,12 +64,12 @@ def make_stylish(diff_tree, depth=0):
 
     elif node_type in {"same", "changed", "added", "deleted"}:
         lines = []
-        for v, sym in zip(values, symbols):
-            line = prepare_indent(depth, sym) + f"{key}: {deep_line(v, depth + 1)}"
+        for v, s in zip(values, symbols):
+            line = (
+                prepare_indent(depth, s) + f"{key}: {deep_line(v, depth + 1)}"
+            )
             lines.append(line)
         return "\n".join(lines)
 
     else:
         raise ValueError("Unknown node type")
-
-    # return "\n".join(lines)

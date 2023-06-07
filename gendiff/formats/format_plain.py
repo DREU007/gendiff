@@ -26,11 +26,12 @@ def flatten(items):
 
 
 def make_plain(item, current_key=""):
-    data_type = get_type(item)
+    node_type = get_type(item)
+    children = get_children(item)
 
-    if data_type == "root":
+    if node_type == "root":
         lines = list(map(
-            lambda child: make_plain(child), get_children(item)
+            lambda node: make_plain(node), children
         ))
         flat_lines = flatten(lines)
         result = filter(None, flat_lines)
@@ -38,24 +39,30 @@ def make_plain(item, current_key=""):
 
     key = get_key(item)
     values = get_value(item)
-    children = get_children(item)
 
-    if data_type == "parent":
+    if node_type == "parent":
         deep_key = current_key + f"{key}."
         return list(map(
-            lambda child: make_plain(child, deep_key), children
+            lambda node: make_plain(node, deep_key), children
         ))
 
-    elif data_type == "same":
+    elif node_type == "same":
         return
 
     line = f"Property '{current_key + key}'"
 
-    if data_type == "changed":
+    if node_type == "changed":
         val1, val2 = map(value_to_str, values)
         line += f' was updated. From {val1} to {val2}'
         return line
 
-    line += f' was added with value: {value_to_str(values)}' if (
-            data_type == "added") else ' was removed'
-    return line
+    elif node_type == "added":
+        line += f' was added with value: {value_to_str(values)}'
+        return line
+
+    elif node_type == "deleted":
+        line += ' was removed'
+        return line
+
+    else:
+        raise ValueError("Unknown node type")

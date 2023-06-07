@@ -59,7 +59,7 @@ def get_key(obj):
 
 def get_value(obj):
     return object if "value" not in obj else (
-        list(val) if isinstance((val := obj["value"]), tuple) else [val]
+        list(val) if isinstance((val := obj["value"]), tuple) else val
     )
 
 

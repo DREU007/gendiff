@@ -50,13 +50,12 @@ def make_plain(item, current_key=""):
         return
 
     line = f"Property '{current_key + key}'"
-    val1 = value_to_str(values[0])
 
     if data_type == "changed":
-        val2 = value_to_str(values[1])
+        val1, val2 = map(value_to_str, values)
         line += f' was updated. From {val1} to {val2}'
         return line
 
-    line += f' was added with value: {val1}' if (
+    line += f' was added with value: {value_to_str(values)}' if (
             data_type == "added") else ' was removed'
     return line

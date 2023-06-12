@@ -4,7 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/3db24100326d2a0062e0/maintainability)](https://codeclimate.com/github/DREU007/python-project-50/maintainability)
 
 ### Description
-**Difference generator** - a CLI tool to distinguish the difference in two JSON and/or YAML files. The output could be in plain text, detailed difference, or be JSON dictionary.
+**Gendiff (Difference generator)** - a CLI tool to distinguish the difference in two JSON and/or YAML files. The output could be in plain text, detailed difference, or be JSON dictionary.
 
 ### Installation
 ```
